@@ -17,7 +17,7 @@ function obtenerMapaModulos(){
 async function iniciarAlumnoDashboard(){
   ocultarModulos();
 
-  if(typeof perfilActual !== 'function'){
+  if(typeof perfilActual !== 'function' || typeof sbAuth === 'undefined'){
     mostrarAviso('No se pudo validar la sesión.');
     return;
   }
@@ -51,7 +51,6 @@ async function iniciarAlumnoDashboard(){
 
 function ocultarModulos(){
   const mapaModulos = obtenerMapaModulos();
-
   Object.values(mapaModulos).forEach(card => {
     if(!card) return;
     card.classList.add('hidden');
@@ -78,6 +77,11 @@ async function cargarModulosAsignados(alumno){
     .map(item => item.materias?.clave)
     .filter(Boolean);
 
+  if(!modulosAsignados.length){
+    mostrarAviso('Tu grupo aún no tiene módulos asignados. Consulta con tu docente.');
+    return;
+  }
+
   const { data: accesos, error: accesosError } = await sbAuth
     .from('alumno_accesos')
     .select('modulo, habilitado')
@@ -87,27 +91,18 @@ async function cargarModulosAsignados(alumno){
     console.error(accesosError);
   }
 
-  const accesoPorModulo = new Map(
-    (accesos || []).map(a => [a.modulo, a.habilitado])
-  );
-
-  const visibles = modulosAsignados.filter(modulo => {
-    return accesoPorModulo.has(modulo)
-      ? accesoPorModulo.get(modulo) === true
-      : true;
-  });
-
-  if(!visibles.length){
-    mostrarAviso('No tienes módulos activos por el momento.');
-    return;
-  }
-
+  const accesoPorModulo = new Map((accesos || []).map(a => [a.modulo, a.habilitado]));
   const grupoNombre = alumno.grupos?.nombre || '';
+  let visibles = 0;
 
-  visibles.forEach(modulo => {
+  modulosAsignados.forEach(modulo => {
+    const habilitado = accesoPorModulo.has(modulo) ? accesoPorModulo.get(modulo) === true : true;
+    if(!habilitado) return;
+
     const card = mapaModulos[modulo];
     if(!card) return;
 
+    visibles++;
     card.classList.remove('hidden');
     card.classList.remove('disabled');
     card.setAttribute('href', infoModulos[modulo]?.href || '#');
@@ -117,6 +112,10 @@ async function cargarModulosAsignados(alumno){
       meta.innerHTML = `<span class="chip">${esc(grupoNombre)}</span>`;
     }
   });
+
+  if(!visibles){
+    mostrarAviso('No tienes módulos activos por el momento.');
+  }
 }
 
 function mostrarAviso(texto){
@@ -142,37 +141,14 @@ async function cargarPostits(alumnoId){
     return;
   }
 
-  contenedor.innerHTML = `
-    <div class="postit-list">
-      ${data.map(m => `
-        <article class="postit">
-          <h3>${esc(m.titulo)}</h3>
-          <p>${esc(m.mensaje)}</p>
-          <div class="actions">
-            <button class="btn small" onclick="marcarPostit(${m.id})">
-              Entendido
-            </button>
-          </div>
-        </article>
-      `).join('')}
-    </div>
-  `;
+  contenedor.innerHTML = `<div class="postit-list">${data.map(m => `<article class="postit"><h3>${esc(m.titulo)}</h3><p>${esc(m.mensaje)}</p><div class="actions"><button class="btn small" onclick="marcarPostit(${m.id})">Entendido</button></div></article>`).join('')}</div>`;
 }
 
 async function marcarPostit(id){
-  await sbAuth
-    .from('mensajes_postit')
-    .update({ visto: true })
-    .eq('id', id);
-
+  await sbAuth.from('mensajes_postit').update({ visto: true }).eq('id', id);
   iniciarAlumnoDashboard();
 }
 
 function esc(v){
-  return String(v ?? '').replace(/[&<>"]/g, c => ({
-    '&':'&amp;',
-    '<':'&lt;',
-    '>':'&gt;',
-    '"':'&quot;'
-  }[c]));
+  return String(v ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 }
