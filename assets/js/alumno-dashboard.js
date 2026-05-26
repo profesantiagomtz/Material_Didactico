@@ -1,9 +1,7 @@
-const sbAlumnoDash = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 const infoModulos = {
-  COBD: { titulo: 'Bases de Datos', href: 'cobd.html' },
-  POO: { titulo: 'Programación', href: 'poo.html' },
-  MRDE: { titulo: 'Redes', href: 'mrde.html' }
+  COBD: { href: 'cobd.html' },
+  POO: { href: 'poo.html' },
+  MRDE: { href: 'mrde.html' }
 };
 
 document.addEventListener('DOMContentLoaded', iniciarAlumnoDashboard);
@@ -19,16 +17,25 @@ function obtenerMapaModulos(){
 async function iniciarAlumnoDashboard(){
   ocultarModulos();
 
-  const perfil = await perfilActual();
-  if(!perfil) return;
+  if(typeof perfilActual !== 'function'){
+    mostrarAviso('No se pudo validar la sesión.');
+    return;
+  }
 
-  const { data: alumno, error } = await sbAlumnoDash
+  const perfil = await perfilActual();
+  if(!perfil){
+    mostrarAviso('No se encontró tu perfil de usuario.');
+    return;
+  }
+
+  const { data: alumno, error } = await sbAuth
     .from('alumnos')
     .select('id, estado, grupo_id, grupos(nombre, turno)')
     .eq('perfil_id', perfil.id)
     .single();
 
   if(error || !alumno){
+    console.error(error);
     mostrarAviso('No se encontró tu registro de alumno. Consulta con tu docente.');
     return;
   }
@@ -55,7 +62,7 @@ function ocultarModulos(){
 async function cargarModulosAsignados(alumno){
   const mapaModulos = obtenerMapaModulos();
 
-  const { data: asignaciones, error: asignacionesError } = await sbAlumnoDash
+  const { data: asignaciones, error: asignacionesError } = await sbAuth
     .from('asignaciones')
     .select('grupo_id, activa, materias(clave, nombre)')
     .eq('grupo_id', alumno.grupo_id)
@@ -71,12 +78,7 @@ async function cargarModulosAsignados(alumno){
     .map(item => item.materias?.clave)
     .filter(Boolean);
 
-  if(!modulosAsignados.length){
-    mostrarAviso('Tu grupo aún no tiene módulos asignados. Consulta con tu docente.');
-    return;
-  }
-
-  const { data: accesos, error: accesosError } = await sbAlumnoDash
+  const { data: accesos, error: accesosError } = await sbAuth
     .from('alumno_accesos')
     .select('modulo, habilitado')
     .eq('alumno_id', alumno.id);
@@ -85,30 +87,34 @@ async function cargarModulosAsignados(alumno){
     console.error(accesosError);
   }
 
-  const accesoPorModulo = new Map((accesos || []).map(a => [a.modulo, a.habilitado]));
+  const accesoPorModulo = new Map(
+    (accesos || []).map(a => [a.modulo, a.habilitado])
+  );
+
+  const visibles = modulosAsignados.filter(modulo => {
+    return accesoPorModulo.has(modulo)
+      ? accesoPorModulo.get(modulo) === true
+      : true;
+  });
+
+  if(!visibles.length){
+    mostrarAviso('No tienes módulos activos por el momento.');
+    return;
+  }
+
   const grupoNombre = alumno.grupos?.nombre || '';
 
-  modulosAsignados.forEach(modulo => {
+  visibles.forEach(modulo => {
     const card = mapaModulos[modulo];
     if(!card) return;
 
     card.classList.remove('hidden');
+    card.classList.remove('disabled');
     card.setAttribute('href', infoModulos[modulo]?.href || '#');
 
     const meta = card.querySelector('.meta');
-    const habilitado = accesoPorModulo.has(modulo) ? accesoPorModulo.get(modulo) : true;
-
     if(meta){
       meta.innerHTML = `<span class="chip">${esc(grupoNombre)}</span>`;
-    }
-
-    if(!habilitado){
-      card.classList.add('disabled');
-      card.removeAttribute('href');
-
-      if(meta){
-        meta.innerHTML = `<span class="chip">${esc(grupoNombre)}</span><span class="chip">No disponible</span>`;
-      }
     }
   });
 }
@@ -124,7 +130,7 @@ async function cargarPostits(alumnoId){
   const contenedor = document.getElementById('postitsAlumno');
   if(!contenedor) return;
 
-  const { data, error } = await sbAlumnoDash
+  const { data, error } = await sbAuth
     .from('mensajes_postit')
     .select('*')
     .eq('alumno_id', alumnoId)
@@ -154,7 +160,7 @@ async function cargarPostits(alumnoId){
 }
 
 async function marcarPostit(id){
-  await sbAlumnoDash
+  await sbAuth
     .from('mensajes_postit')
     .update({ visto: true })
     .eq('id', id);
