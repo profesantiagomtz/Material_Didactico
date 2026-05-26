@@ -1,13 +1,39 @@
 const sbAdmin = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const modulos = ['COBD','POO','MRDE'];
 let alumnosCache = [];
+let asignacionesPorGrupo = new Map();
 
 const tabla = document.getElementById('tablaAlumnos');
 const estado = document.getElementById('estadoAlumnos');
 const modal = document.getElementById('modal');
 document.getElementById('recargar').addEventListener('click', cargarAlumnos);
 
-document.addEventListener('DOMContentLoaded', cargarAlumnos);
+document.addEventListener('DOMContentLoaded', async () => {
+  await cargarAsignacionesPorGrupo();
+  await cargarAlumnos();
+});
+
+async function cargarAsignacionesPorGrupo(){
+  const { data, error } = await sbAdmin
+    .from('asignaciones')
+    .select('grupo_id, activa, materias(clave)')
+    .eq('activa', true);
+
+  if(error){
+    console.error(error);
+    asignacionesPorGrupo = new Map();
+    return;
+  }
+
+  asignacionesPorGrupo = new Map();
+  (data || []).forEach(item => {
+    const modulo = item.materias?.clave;
+    if(!modulo) return;
+    const lista = asignacionesPorGrupo.get(item.grupo_id) || [];
+    if(!lista.includes(modulo)) lista.push(modulo);
+    asignacionesPorGrupo.set(item.grupo_id, lista);
+  });
+}
 
 async function cargarAlumnos(){
   estado.textContent = 'Cargando lista de alumnos';
@@ -39,7 +65,7 @@ function filaAlumno(alumno){
       <td>${esc(perfil.correo || '')}</td>
       <td>${esc(grupo)}</td>
       <td><span class="badge ${activo ? 'ok' : 'warn'}">${activo ? 'Activo' : 'Baja'}</span></td>
-      <td><div class="switches">${modulos.map(m => switchModulo(alumno, accesos, m)).join('')}</div></td>
+      <td><div class="switches">${switchesAlumno(alumno, accesos)}</div></td>
       <td><div class="actions">
         <button class="btn small" onclick="abrirPostit(${alumno.id})">Post-it</button>
         <button class="btn small" onclick="enviarReset('${escAttr(perfil.correo || '')}')">Contraseña</button>
@@ -49,6 +75,12 @@ function filaAlumno(alumno){
         <button class="btn small danger" onclick="eliminarAlumno(${alumno.id}, '${alumno.perfil_id}')">Eliminar</button>
       </div></td>
     </tr>`;
+}
+
+function switchesAlumno(alumno, accesos){
+  const asignados = asignacionesPorGrupo.get(alumno.grupo_id) || [];
+  if(!asignados.length) return '<span class="badge warn">Sin módulos asignados</span>';
+  return asignados.map(m => switchModulo(alumno, accesos, m)).join('');
 }
 
 function switchModulo(alumno, accesos, modulo){
