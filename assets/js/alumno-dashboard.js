@@ -1,9 +1,4 @@
 const sbAlumnoDash = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const mapaModulos = {
-  COBD: document.querySelector('[data-modulo="COBD"]'),
-  POO: document.querySelector('[data-modulo="POO"]'),
-  MRDE: document.querySelector('[data-modulo="MRDE"]')
-};
 
 const infoModulos = {
   COBD: { titulo: 'Bases de Datos', href: 'cobd.html' },
@@ -12,6 +7,14 @@ const infoModulos = {
 };
 
 document.addEventListener('DOMContentLoaded', iniciarAlumnoDashboard);
+
+function obtenerMapaModulos(){
+  return {
+    COBD: document.querySelector('[data-modulo="COBD"]'),
+    POO: document.querySelector('[data-modulo="POO"]'),
+    MRDE: document.querySelector('[data-modulo="MRDE"]')
+  };
+}
 
 async function iniciarAlumnoDashboard(){
   ocultarModulos();
@@ -40,6 +43,8 @@ async function iniciarAlumnoDashboard(){
 }
 
 function ocultarModulos(){
+  const mapaModulos = obtenerMapaModulos();
+
   Object.values(mapaModulos).forEach(card => {
     if(!card) return;
     card.classList.add('hidden');
@@ -48,6 +53,8 @@ function ocultarModulos(){
 }
 
 async function cargarModulosAsignados(alumno){
+  const mapaModulos = obtenerMapaModulos();
+
   const { data: asignaciones, error: asignacionesError } = await sbAlumnoDash
     .from('asignaciones')
     .select('grupo_id, activa, materias(clave, nombre)')
@@ -98,6 +105,7 @@ async function cargarModulosAsignados(alumno){
     if(!habilitado){
       card.classList.add('disabled');
       card.removeAttribute('href');
+
       if(meta){
         meta.innerHTML = `<span class="chip">${esc(grupoNombre)}</span><span class="chip">No disponible</span>`;
       }
@@ -115,6 +123,7 @@ function mostrarAviso(texto){
 async function cargarPostits(alumnoId){
   const contenedor = document.getElementById('postitsAlumno');
   if(!contenedor) return;
+
   const { data, error } = await sbAlumnoDash
     .from('mensajes_postit')
     .select('*')
@@ -127,14 +136,37 @@ async function cargarPostits(alumnoId){
     return;
   }
 
-  contenedor.innerHTML = `<div class="postit-list">${data.map(m => `<article class="postit"><h3>${esc(m.titulo)}</h3><p>${esc(m.mensaje)}</p><div class="actions"><button class="btn small" onclick="marcarPostit(${m.id})">Entendido</button></div></article>`).join('')}</div>`;
+  contenedor.innerHTML = `
+    <div class="postit-list">
+      ${data.map(m => `
+        <article class="postit">
+          <h3>${esc(m.titulo)}</h3>
+          <p>${esc(m.mensaje)}</p>
+          <div class="actions">
+            <button class="btn small" onclick="marcarPostit(${m.id})">
+              Entendido
+            </button>
+          </div>
+        </article>
+      `).join('')}
+    </div>
+  `;
 }
 
 async function marcarPostit(id){
-  await sbAlumnoDash.from('mensajes_postit').update({ visto: true }).eq('id', id);
+  await sbAlumnoDash
+    .from('mensajes_postit')
+    .update({ visto: true })
+    .eq('id', id);
+
   iniciarAlumnoDashboard();
 }
 
 function esc(v){
-  return String(v ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  return String(v ?? '').replace(/[&<>"]/g, c => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;'
+  }[c]));
 }
