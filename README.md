@@ -1,25 +1,19 @@
-# Material Didáctico 2.0 - MVP
+# Material Didáctico 2.0 - Cuaderno Pro
 
-Plataforma académica con GitHub Pages + Supabase.
+Versión con identidad visual de cuaderno digital inteligente, navegación inicial de alumno y simulador POO con IDE integrado.
 
-## Incluye
+## Importante
+No se incluye `assets/js/config.js` para evitar sobrescribir tu llave de Supabase. Conserva el archivo que ya tienes funcionando.
 
-- Página inicial conectada a Supabase.
-- Actividad POO con IDE integrado para `if/else`.
-- Ejecución de código JavaScript en sandbox.
-- Pruebas automáticas.
-- Registro de autenticidad básica: tiempo y pegado.
-- Guardado de entrega en Supabase.
+Si necesitas crearlo de nuevo:
 
-## Pasos
+```js
+const SUPABASE_URL = 'https://mllxxtibwzijewfclnuj.supabase.co';
+const SUPABASE_ANON_KEY = 'TU_PUBLISHABLE_KEY';
+```
 
-1. Ejecutar `database/01_respuestas_simulador.sql` en Supabase SQL Editor.
-2. Abrir `assets/js/config.js` y pegar la anon public key.
-3. Subir archivos al repositorio GitHub.
-4. Abrir GitHub Pages.
-5. Probar `alumno/poo-ifelse.html`.
-
-## Nota de seguridad
-
-Las políticas de Supabase incluidas son temporales para pruebas rápidas sin login.
-Después deben endurecerse con autenticación real.
+## Rutas principales
+- `index.html`
+- `alumno/dashboard.html`
+- `alumno/poo.html`
+- `alumno/poo-ifelse.html`

@@ -1,37 +1,37 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Material Didáctico 2.0</title>
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href="assets/css/styles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <main class="shell">
-    <section class="hero-card">
-      <div class="badge">Material Didáctico 2.0</div>
-      <h1>Portal académico inteligente</h1>
-      <p class="lead">
-        Contenidos, actividades, simuladores, evidencias y evaluación para COBD, POO y MRDE.
-      </p>
-
-      <div id="estado" class="status">🔄 Conectando con Supabase...</div>
-
-      <div class="actions">
-        <a class="btn primary" href="alumno/poo-ifelse.html">Abrir actividad POO: if/else</a>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <div class="brand-mark">📒</div>
+        <div><h1>Material Didáctico 2.0</h1><p>Cuaderno digital inteligente</p></div>
+      </a>
+      <nav class="nav">
+        <a href="login.html">Ingresar</a>
+        <a href="registro.html">Crear cuenta</a>
+      </nav>
+    </header>
+    <section class="hero">
+      <h2>Aprender, practicar y evidenciar en un solo lugar.</h2>
+      <p>Plataforma académica para COBD, POO y MRDE con estructura por módulo, actividades contextualizadas, simuladores integrados y conexión directa a Supabase.</p>
+      <div id="estado" class="status">Conectando con Supabase</div>
+      <div class="hero-actions">
+        <a class="btn primary" href="login.html">Ingresar</a>
+        <a class="btn" href="registro.html">Crear cuenta</a>
       </div>
     </section>
-
-    <section>
-      <div class="section-title">
-        <h2>Materias registradas</h2>
-        <p>Lectura directa desde Supabase.</p>
-      </div>
-      <div id="materias" class="grid"></div>
-    </section>
-  </main>
-
+    <div class="section-title"><h2>Módulos activos</h2><span class="muted">COBD · POO · MRDE</span></div>
+    <section id="materias" class="grid"></section>
+    <footer class="footer">Material Didáctico 2.0</footer>
+  </div>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
