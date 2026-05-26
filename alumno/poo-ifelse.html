@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POO - Actividad if/else</title>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero-card">
+      <div class="badge">POO · Simulador integrado</div>
+      <h1>Actividad: toma de decisiones con if/else</h1>
+      <p class="lead">
+        Resuelve una situación real, escribe tu código, ejecútalo en el IDE y explica con tus palabras cómo funciona.
+      </p>
+      <a class="btn secondary" href="../index.html">← Volver al inicio</a>
+    </section>
+
+    <section class="activity-layout">
+      <div class="panel">
+        <h2>Situación real</h2>
+        <div class="case-box">
+          Una pequeña tienda quiere automatizar el tipo de descuento que ofrece a sus clientes.
+          <br><br>
+          Reglas:
+          <br>• Si el cliente tiene menos de 12 años, recibe descuento infantil.
+          <br>• Si tiene 60 años o más, recibe descuento de adulto mayor.
+          <br>• En cualquier otro caso, paga precio general.
+          <br><br>
+          Crea una función llamada <b>clasificarCliente(edad)</b> que devuelva exactamente:
+          <br><b>"infantil"</b>, <b>"adulto mayor"</b> o <b>"general"</b>.
+        </div>
+
+        <h3 style="margin-top:22px">Candados anti copia rápida</h3>
+        <ul class="checklist">
+          <li>Debes usar una función con tu propia lógica.</li>
+          <li>Debes explicar tu solución con tus palabras.</li>
+          <li>El sistema registra tiempo de trabajo, pegado de texto y resultado de pruebas.</li>
+          <li>La revisión docente/IA puede detectar respuestas demasiado genéricas.</li>
+        </ul>
+
+        <label for="nombre">Nombre completo</label>
+        <input id="nombre" placeholder="Escribe tu nombre completo" />
+
+        <label for="grupo">Grupo</label>
+        <input id="grupo" value="411" />
+
+        <label for="explicacion">Explica tu lógica con tus propias palabras</label>
+        <textarea id="explicacion" placeholder="Explica qué condiciones revisa tu programa y por qué..."></textarea>
+
+        <button class="btn primary" id="btnGuardar">Guardar entrega</button>
+        <div id="guardarResultado" class="result">Aún no has guardado tu entrega.</div>
+      </div>
+
+      <div class="panel">
+        <h2>IDE de práctica</h2>
+        <p class="warning">
+          Escribe tu código. Debe existir la función <b>clasificarCliente(edad)</b>.
+        </p>
+
+        <textarea id="codigo" class="code">function clasificarCliente(edad) {
+  // Escribe aquí tu solución usando if / else
+  if (edad < 12) {
+    return "infantil";
+  } else if (edad >= 60) {
+    return "adulto mayor";
+  } else {
+    return "general";
+  }
+}
+
+console.log("Cliente de 8 años:", clasificarCliente(8));
+console.log("Cliente de 30 años:", clasificarCliente(30));
+console.log("Cliente de 65 años:", clasificarCliente(65));</textarea>
+
+        <div class="actions">
+          <button class="btn primary" id="btnEjecutar">▶ Ejecutar código</button>
+          <button class="btn secondary" id="btnProbar">🧪 Probar automáticamente</button>
+        </div>
+
+        <label>Salida del programa</label>
+        <pre id="salida" class="output">Aquí aparecerá el resultado...</pre>
+
+        <label>Resultado de pruebas</label>
+        <div id="pruebas" class="result">Aún no has ejecutado pruebas.</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/poo-ifelse.js"></script>
+</body>
+</html>
