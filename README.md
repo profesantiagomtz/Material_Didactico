@@ -1,19 +1,18 @@
-# Material Didáctico 2.0 - Cuaderno Pro
+# Material Didáctico 2.0
 
-Versión con identidad visual de cuaderno digital inteligente, navegación inicial de alumno y simulador POO con IDE integrado.
+Plataforma académica tipo cuaderno digital para COBD, POO y MRDE, conectada a Supabase.
 
-## Importante
-No se incluye `assets/js/config.js` para evitar sobrescribir tu llave de Supabase. Conserva el archivo que ya tienes funcionando.
+## Instalación rápida
 
-Si necesitas crearlo de nuevo:
+1. Sube todo el contenido de esta carpeta a GitHub.
+2. Ejecuta en Supabase el archivo `database/00_instalacion_completa.sql`.
+3. Verifica que `assets/js/config.js` tenga tu URL y publishable key de Supabase.
+4. Abre `registro.html` y crea la primera cuenta docente; si no existe administrador, quedará como admin.
 
-```js
-const SUPABASE_URL = 'https://mllxxtibwzijewfclnuj.supabase.co';
-const SUPABASE_ANON_KEY = 'TU_PUBLISHABLE_KEY';
-```
+## Estructura
 
-## Rutas principales
-- `index.html`
-- `alumno/dashboard.html`
-- `alumno/poo.html`
-- `alumno/poo-ifelse.html`
+- `registro.html` y `login.html`: acceso de usuarios.
+- `admin/`: panel docente.
+- `alumno/`: cuaderno del alumno.
+- `assets/js/`: lógica de conexión, auth y paneles.
+- `database/`: scripts SQL.
