@@ -159,45 +159,222 @@ function llenarPagina(key, etiqueta, titulo, html, ayuda){
   `;
 }
 
+
 function construirEjerciciosInteractivos(html){
   const base = htmlSeguro(html) || fallbackRA21A.ejercicios_html;
   return `
     <div class="work-instructions">
-      <strong>Indicaciones:</strong> contesta con tus propias palabras. El sistema revisará si tu respuesta tiene análisis, justificación y vocabulario técnico, pero no te dará la respuesta correcta.
+      <strong>Modo análisis:</strong> primero lee el caso. Después usa el simulador IOS para probar comandos. El sistema no te da la respuesta final; revisa si tu secuencia tiene sentido técnico.
     </div>
     ${base}
+    <section class="ios-simulator" id="simuladorIOS">
+      <div class="sim-head">
+        <div>
+          <span class="label-pill">Simulador IOS</span>
+          <h4>Consola de práctica: prepara el router del laboratorio</h4>
+          <p>Escribe comandos como si estuvieras en Packet Tracer. El simulador valida el modo IOS, detecta errores comunes y te orienta sin resolverte la práctica completa.</p>
+        </div>
+        <button class="btn small" type="button" data-ios-reset>Reiniciar simulador</button>
+      </div>
+      <div class="sim-scenario">
+        <strong>Situación:</strong> recibes un router nuevo para el grupo 611. Necesitas entrar al modo correcto, cambiar su nombre, revisar la configuración y guardar los cambios antes de entregarlo al laboratorio.
+      </div>
+      <div class="terminal-window">
+        <div class="terminal-title"><span></span><span></span><span></span> Cisco IOS Simulator</div>
+        <pre id="iosTerminalOutput" class="terminal-output">Router&gt; </pre>
+        <div class="terminal-input-row">
+          <span id="iosPrompt">Router&gt;</span>
+          <input id="iosCommandInput" class="terminal-input" autocomplete="off" spellcheck="false" placeholder="Escribe un comando y presiona Enter">
+          <button class="btn small primary" type="button" data-run-ios>Ejecutar</button>
+        </div>
+      </div>
+      <div class="sim-evaluation" id="iosEvaluation">
+        <h4>Evaluación automática del simulador</h4>
+        <ul>
+          <li data-check="priv">Entrar al modo privilegiado con <code>enable</code>.</li>
+          <li data-check="config">Entrar a configuración global con <code>configure terminal</code>.</li>
+          <li data-check="host">Cambiar el nombre del router con <code>hostname</code>.</li>
+          <li data-check="show">Verificar con un comando <code>show</code>.</li>
+          <li data-check="save">Guardar la configuración con <code>copy running-config startup-config</code>.</li>
+        </ul>
+        <div id="iosFeedback" class="sim-feedback">Empieza escribiendo <code>enable</code> en la consola.</div>
+      </div>
+    </section>
     <div class="student-workbook" id="ejerciciosInteractivos">
       ${[1,2,3,4].map(n => `
         <label class="field answer-field">
-          <span>Tu respuesta del ejercicio ${n}</span>
-          <textarea class="textarea workbook-answer" data-answer="ejercicio_${n}" placeholder="Explica tu razonamiento. Menciona comandos, modo IOS o concepto técnico si aplica."></textarea>
+          <span>Tu análisis del caso ${n}</span>
+          <textarea class="textarea workbook-answer" data-answer="ejercicio_${n}" placeholder="Explica tu razonamiento. Menciona comandos, modo IOS, evidencia o concepto técnico si aplica."></textarea>
         </label>
       `).join('')}
     </div>
   `;
 }
 
+
 function construirPracticaInteractiva(html){
   const base = htmlSeguro(html) || fallbackRA21A.practica_html;
   return `
-    <div class="work-instructions">
-      <strong>Forma de trabajo:</strong> la práctica se realiza en Packet Tracer, pero la bitácora se registra aquí. Esto ayuda a demostrar que realmente seguiste el proceso.
+    <div class="case-file">
+      <span class="label-pill">Caso realista</span>
+      <h4>Problema: router sin identificar en el laboratorio</h4>
+      <p>El laboratorio recibió un router Cisco para prácticas, pero nadie dejó documentado cómo entrar, en qué modo se encuentra ni si la configuración queda guardada al apagarlo. Tu tarea es prepararlo para el grupo 611, dejar evidencia de cada paso y explicar por qué realizaste cada comando.</p>
+      <div class="case-goal-grid">
+        <article><strong>Objetivo técnico</strong><p>Entrar al IOS, reconocer modos, nombrar el dispositivo, revisar configuración y guardar cambios.</p></article>
+        <article><strong>Restricción</strong><p>No basta con capturas: debes explicar qué comprobaste y por qué.</p></article>
+        <article><strong>Entrega esperada</strong><p>Archivo .pkt, bitácora y respuestas de análisis dentro del sistema.</p></article>
+      </div>
     </div>
     ${base}
-    <div class="practice-board">
+    <div class="practice-board advanced">
       <h4>Checklist de laboratorio</h4>
-      <label><input type="checkbox" data-lab-check> Abrí Packet Tracer y agregué el router.</label>
+      <label><input type="checkbox" data-lab-check> Abrí Packet Tracer y guardé el archivo con el nombre solicitado.</label>
+      <label><input type="checkbox" data-lab-check> Abrí la consola CLI y reconocí el prompt inicial.</label>
       <label><input type="checkbox" data-lab-check> Entré al modo privilegiado con <code>enable</code>.</label>
       <label><input type="checkbox" data-lab-check> Entré a configuración global con <code>configure terminal</code>.</label>
-      <label><input type="checkbox" data-lab-check> Cambié el hostname.</label>
-      <label><input type="checkbox" data-lab-check> Revisé la configuración con un comando <code>show</code>.</label>
-      <label><input type="checkbox" data-lab-check> Guardé la configuración.</label>
+      <label><input type="checkbox" data-lab-check> Cambié el hostname siguiendo una nomenclatura clara.</label>
+      <label><input type="checkbox" data-lab-check> Usé al menos un comando <code>show</code> para comprobar resultados.</label>
+      <label><input type="checkbox" data-lab-check> Guardé la configuración con <code>copy running-config startup-config</code>.</label>
+      <label><input type="checkbox" data-lab-check> Redacté en la bitácora qué hice, qué observé y qué corregiría si fallara.</label>
     </div>
     <label class="field answer-field">
       <span>Bitácora de laboratorio</span>
-      <textarea class="textarea workbook-answer" data-answer="bitacora_practica" placeholder="Describe lo que hiciste en Packet Tracer. Incluye comandos y verificaciones."></textarea>
+      <textarea class="textarea workbook-answer" data-answer="bitacora_practica" placeholder="Describe lo que hiciste en Packet Tracer. Incluye comandos, modo IOS, verificaciones y resultado observado."></textarea>
     </label>
   `;
+}
+
+
+const iosSimState = { mode:'user', hostname:'Router', saved:false, checks:{priv:false,config:false,host:false,show:false,save:false}, history:[] };
+
+function promptIOS(){
+  if(iosSimState.mode === 'config') return `${iosSimState.hostname}(config)#`;
+  if(iosSimState.mode === 'priv') return `${iosSimState.hostname}#`;
+  return `${iosSimState.hostname}>`;
+}
+
+function resetIOSSimulator(){
+  iosSimState.mode = 'user';
+  iosSimState.hostname = 'Router';
+  iosSimState.saved = false;
+  iosSimState.checks = {priv:false,config:false,host:false,show:false,save:false};
+  iosSimState.history = [];
+  const out = document.getElementById('iosTerminalOutput');
+  if(out) out.textContent = `${promptIOS()} `;
+  const input = document.getElementById('iosCommandInput');
+  if(input) input.value = '';
+  actualizarPromptIOS();
+  actualizarEvaluacionIOS('Simulador reiniciado. Comienza con enable.');
+}
+
+function ejecutarComandoIOS(){
+  const input = document.getElementById('iosCommandInput');
+  const out = document.getElementById('iosTerminalOutput');
+  if(!input || !out) return;
+  const raw = input.value.trim();
+  if(!raw) return;
+  const cmd = raw.replace(/\s+/g,' ');
+  iosSimState.history.push(cmd);
+  let respuesta = procesarComandoIOS(cmd);
+  out.textContent += `${cmd}\n${respuesta}${promptIOS()} `;
+  out.scrollTop = out.scrollHeight;
+  input.value = '';
+  actualizarPromptIOS();
+  actualizarProgreso();
+}
+
+function procesarComandoIOS(cmd){
+  const lower = cmd.toLowerCase();
+  if(lower === '?' || lower === 'help') return ayudaPorModo();
+  if(lower === 'clear') { resetIOSSimulator(); return ''; }
+
+  if(iosSimState.mode === 'user'){
+    if(lower === 'enable' || lower === 'en'){
+      iosSimState.mode = 'priv';
+      iosSimState.checks.priv = true;
+      actualizarEvaluacionIOS('Correcto: ahora estás en modo privilegiado. Observa que el prompt cambió a #.');
+      return '';
+    }
+    if(lower.startsWith('configure')) return '% Invalid input: primero debes entrar al modo privilegiado con enable.\n';
+    if(lower.startsWith('show')) return '% Comando limitado en modo usuario. Para esta práctica entra con enable.\n';
+    return '% Comando no reconocido en modo usuario. Pista: inicia con enable.\n';
+  }
+
+  if(iosSimState.mode === 'priv'){
+    if(lower === 'configure terminal' || lower === 'conf t'){
+      iosSimState.mode = 'config';
+      iosSimState.checks.config = true;
+      actualizarEvaluacionIOS('Bien: entraste a configuración global. Aquí sí puedes modificar parámetros del dispositivo.');
+      return 'Enter configuration commands, one per line. End with CNTL/Z.\n';
+    }
+    if(lower === 'disable'){
+      iosSimState.mode = 'user';
+      actualizarEvaluacionIOS('Volviste al modo usuario.');
+      return '';
+    }
+    if(lower === 'show running-config' || lower === 'show run'){
+      iosSimState.checks.show = true;
+      actualizarEvaluacionIOS('Correcto: usaste un comando show para verificar la configuración activa.');
+      return `Building configuration...\n\nCurrent configuration:\n!\nhostname ${iosSimState.hostname}\n!\nline console 0\n!\nend\n`;
+    }
+    if(lower === 'show startup-config' || lower === 'show start'){
+      iosSimState.checks.show = true;
+      return iosSimState.saved ? `Using 1024 out of 262144 bytes\n!\nhostname ${iosSimState.hostname}\n!\nend\n` : '% Startup-config is not present. Aún no has guardado la configuración.\n';
+    }
+    if(lower === 'show ip interface brief'){
+      iosSimState.checks.show = true;
+      actualizarEvaluacionIOS('Bien: show ip interface brief sirve para revisar interfaces y estado.');
+      return 'Interface              IP-Address      OK? Method Status                Protocol\nGigabitEthernet0/0     unassigned      YES unset  administratively down down\nGigabitEthernet0/1     unassigned      YES unset  administratively down down\n';
+    }
+    if(lower === 'copy running-config startup-config' || lower === 'copy run start' || lower === 'wr'){
+      iosSimState.saved = true;
+      iosSimState.checks.save = true;
+      actualizarEvaluacionIOS('Excelente: guardaste la running-config como startup-config.');
+      return 'Destination filename [startup-config]? \nBuilding configuration...\n[OK]\n';
+    }
+    if(lower.startsWith('hostname')) return '% El comando hostname se ejecuta desde configuración global: configure terminal.\n';
+    return '% Comando no reconocido en modo privilegiado. Prueba configure terminal, show running-config o copy running-config startup-config.\n';
+  }
+
+  if(iosSimState.mode === 'config'){
+    if(lower === 'exit' || lower === 'end'){
+      iosSimState.mode = 'priv';
+      actualizarEvaluacionIOS('Saliste de configuración global. Ahora puedes verificar con show running-config.');
+      return '';
+    }
+    if(lower.startsWith('hostname ')){
+      const nuevo = cmd.split(' ').slice(1).join('-').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,18);
+      if(!nuevo) return '% Hostname inválido. Usa un nombre corto, por ejemplo: hostname R611.\n';
+      iosSimState.hostname = nuevo;
+      iosSimState.checks.host = true;
+      actualizarEvaluacionIOS(`Correcto: cambiaste el hostname a ${nuevo}. El prompt es evidencia inmediata del cambio.`);
+      return '';
+    }
+    if(lower.startsWith('show')) return '% Los comandos show normalmente se ejecutan en modo privilegiado. Usa end y luego show running-config.\n';
+    if(lower === 'enable') return '% Ya estás configurando el dispositivo. Para volver usa end.\n';
+    return '% Comando no reconocido en configuración global. Para esta práctica usa hostname o end.\n';
+  }
+  return '';
+}
+
+function ayudaPorModo(){
+  if(iosSimState.mode === 'user') return 'Comandos sugeridos: enable\n';
+  if(iosSimState.mode === 'priv') return 'Comandos sugeridos: configure terminal | show running-config | show ip interface brief | copy running-config startup-config\n';
+  return 'Comandos sugeridos: hostname R611 | end | exit\n';
+}
+
+function actualizarPromptIOS(){
+  const p = document.getElementById('iosPrompt');
+  if(p) p.textContent = promptIOS();
+}
+
+function actualizarEvaluacionIOS(mensaje){
+  Object.entries(iosSimState.checks).forEach(([key,val]) => {
+    const item = document.querySelector(`[data-check="${key}"]`);
+    if(item) item.classList.toggle('ok', !!val);
+  });
+  const f = document.getElementById('iosFeedback');
+  if(f) f.innerHTML = mensaje;
 }
 
 function prepararNavegacion(){
@@ -209,6 +386,14 @@ function prepararNavegacion(){
       const actual = document.querySelector('[data-section]:not(.hidden)')?.dataset.section;
       const idx = seccionesOrden.indexOf(actual);
       mostrarSeccion(seccionesOrden[Math.min(idx + 1, seccionesOrden.length - 1)] || 'entrega');
+    }
+    if(event.target.matches('[data-run-ios]')) ejecutarComandoIOS();
+    if(event.target.matches('[data-ios-reset]')) resetIOSSimulator();
+  });
+  document.addEventListener('keydown', (event) => {
+    if(event.key === 'Enter' && event.target?.id === 'iosCommandInput'){
+      event.preventDefault();
+      ejecutarComandoIOS();
     }
   });
   document.addEventListener('change', (event) => {
