@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" role="img" aria-label="Diagrama de acceso por consola a un router Cisco">
+  <rect width="900" height="420" fill="#f5f1e8"/>
+  <defs>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M 24 0 L 0 0 0 24" fill="none" stroke="#c8d0dc" stroke-width="1" opacity=".55"/></pattern>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="5" dy="5" stdDeviation="0" flood-color="#1a1a1a"/></filter>
+  </defs>
+  <rect width="900" height="420" fill="url(#grid)"/>
+  <text x="44" y="55" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#1a1a1a">Acceso inicial al IOS por consola</text>
+  <g filter="url(#shadow)">
+    <rect x="70" y="130" width="230" height="150" rx="18" fill="#fffaf0" stroke="#1a1a1a" stroke-width="4"/>
+    <rect x="105" y="158" width="160" height="82" rx="8" fill="#dbeafe" stroke="#1a1a1a" stroke-width="3"/>
+    <rect x="145" y="250" width="80" height="16" rx="4" fill="#1a1a1a"/>
+    <text x="185" y="315" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">PC del alumno</text>
+    <text x="185" y="344" text-anchor="middle" font-family="Arial" font-size="16">Terminal / Consola</text>
+  </g>
+  <path d="M310 205 C405 130, 485 280, 585 205" fill="none" stroke="#2b4c7e" stroke-width="8" stroke-linecap="round" stroke-dasharray="18 14"/>
+  <text x="448" y="170" text-anchor="middle" font-family="Arial" font-size="20" font-weight="700" fill="#2b4c7e">Cable consola</text>
+  <g filter="url(#shadow)">
+    <rect x="600" y="130" width="230" height="150" rx="22" fill="#fffaf0" stroke="#1a1a1a" stroke-width="4"/>
+    <circle cx="650" cy="205" r="24" fill="#c7d2fe" stroke="#1a1a1a" stroke-width="3"/>
+    <circle cx="715" cy="205" r="24" fill="#c7d2fe" stroke="#1a1a1a" stroke-width="3"/>
+    <circle cx="780" cy="205" r="24" fill="#c7d2fe" stroke="#1a1a1a" stroke-width="3"/>
+    <text x="715" y="315" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Router Cisco</text>
+    <text x="715" y="344" text-anchor="middle" font-family="Arial" font-size="16">Puerto consola</text>
+  </g>
+</svg>
