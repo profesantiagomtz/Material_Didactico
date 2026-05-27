@@ -49,7 +49,7 @@ async function cargarMRDEAlumno(){
       .eq('modulo', 'MRDE')
       .eq('grupo', grupo)
       .eq('publicada', true)
-      .order('creado_en', { ascending: false });
+      .order('id', { ascending: true });
 
     if(error) throw error;
 
@@ -65,8 +65,8 @@ async function cargarMRDEAlumno(){
         <p>${esc(a.descripcion || '')}</p>
         <div class="row">
           <span class="badge warn">${esc(a.grupo)}</span>
-          <span class="badge blue">${esc(a.tipo || 'Actividad')}</span>
-          <a class="btn primary" href="actividad.html?id=${a.id}">Abrir actividad</a>
+          <span class="badge blue">${esc(a.codigo || a.tipo || 'Actividad')}</span>
+          <a class="btn primary" href="actividad.html?id=${a.id}">Abrir cuaderno</a>
         </div>
       </article>
     `).join('');
