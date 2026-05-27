@@ -12,25 +12,9 @@ async function perfilActual(){
   const { data: sessionData } = await sbAuth.auth.getUser();
   const user = sessionData?.user;
   if(!user) return null;
-
-  const { data, error } = await sbAuth
-    .from('perfiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
-
-  if(error){
-    console.error(error);
-    return null;
-  }
-
+  const { data, error } = await sbAuth.from('perfiles').select('*').eq('id', user.id).single();
+  if(error) return null;
   return data;
-}
-
-function rutaLogin(){
-  return location.pathname.includes('/admin/') || location.pathname.includes('/alumno/')
-    ? '../login.html'
-    : 'login.html';
 }
 
 async function redirigirPorRol(){
@@ -61,17 +45,10 @@ if(loginForm){
   loginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     statusBox('Validando acceso');
-
-    const correo = document.getElementById('correo').value.trim().toLowerCase();
+    const correo = document.getElementById('correo').value.trim();
     const password = document.getElementById('password').value;
-
     const { error } = await sbAuth.auth.signInWithPassword({ email: correo, password });
-    if(error){
-      console.error(error);
-      statusBox('No se pudo iniciar sesión. Revisa correo y contraseña.', 'error');
-      return;
-    }
-
+    if(error){ statusBox('No se pudo iniciar sesión. Revisa correo y contraseña.', 'error'); return; }
     await redirigirPorRol();
   });
 }
@@ -91,42 +68,20 @@ if(registroForm){
     event.preventDefault();
 
     const nombre = document.getElementById('nombre').value.trim();
-    const correo = document.getElementById('correo').value.trim().toLowerCase();
+    const correo = document.getElementById('correo').value.trim();
     const password = document.getElementById('password').value;
     const tipo = document.getElementById('rol').value;
     const grupo = document.getElementById('grupo')?.value;
+    const rol = tipo === 'docente' ? 'docente_pendiente' : 'alumno';
+    const activo = tipo === 'docente' ? false : true;
 
     statusBox('Creando cuenta');
 
     const { data, error } = await sbAuth.auth.signUp({ email: correo, password });
-    if(error){
-      console.error(error);
-      const mensaje = error.message?.toLowerCase().includes('already')
-        ? 'Ese correo ya está registrado. Intenta iniciar sesión.'
-        : 'No se pudo crear la cuenta. Revisa los datos.';
-      statusBox(mensaje, 'error');
-      return;
-    }
+    if(error){ statusBox('No se pudo crear la cuenta. Revisa los datos.', 'error'); return; }
 
     const userId = data?.user?.id;
-    if(!userId){
-      statusBox('Cuenta creada. Revisa tu correo para confirmar el acceso.', 'info');
-      return;
-    }
-
-    let rol = 'alumno';
-    let activo = true;
-
-    if(tipo === 'docente'){
-      const { count } = await sbAuth
-        .from('perfiles')
-        .select('id', { count: 'exact', head: true })
-        .eq('rol', 'admin');
-
-      const noHayAdmin = !count;
-      rol = noHayAdmin ? 'admin' : 'docente_pendiente';
-      activo = noHayAdmin;
-    }
+    if(!userId){ statusBox('Cuenta creada. Revisa tu correo para confirmar el acceso.', 'info'); return; }
 
     const { error: perfilError } = await sbAuth.from('perfiles').upsert({
       id: userId,
@@ -136,67 +91,40 @@ if(registroForm){
       activo
     });
 
-    if(perfilError){
-      console.error(perfilError);
-      statusBox('Cuenta creada, pero falta completar el perfil.', 'error');
-      return;
-    }
+    if(perfilError){ statusBox('Cuenta creada, pero falta completar el perfil.', 'error'); return; }
 
     if(tipo === 'alumno'){
-      const { data: grupoData, error: grupoError } = await sbAuth
-        .from('grupos')
-        .select('id')
-        .eq('nombre', grupo)
-        .single();
+      const { data: grupoData } = await sbAuth.from('grupos').select('id').eq('nombre', grupo).single();
+      if(grupoData?.id){
+        const { data: alumnoCreado, error: alumnoError } = await sbAuth
+          .from('alumnos')
+          .insert({ perfil_id: userId, grupo_id: grupoData.id, estado: 'activo' })
+          .select('id')
+          .single();
 
-      if(grupoError || !grupoData?.id){
-        console.error(grupoError);
-        statusBox('Cuenta creada, pero no se encontró el grupo.', 'error');
-        return;
+        if(alumnoError){
+          console.error(alumnoError);
+          statusBox('Cuenta creada, pero falta completar el registro de alumno.', 'error');
+          return;
+        }
+
+        const { data: modulosGrupo } = await sbAuth
+          .from('asignaciones')
+          .select('materias(clave)')
+          .eq('grupo_id', grupoData.id)
+          .eq('activa', true);
+
+        const accesosIniciales = (modulosGrupo || [])
+          .map(item => item.materias?.clave)
+          .filter(Boolean)
+          .map(modulo => ({ alumno_id: alumnoCreado.id, modulo, habilitado: true }));
+
+        if(accesosIniciales.length){
+          await sbAuth.from('alumno_accesos').upsert(accesosIniciales, { onConflict: 'alumno_id,modulo' });
+        }
       }
-
-      const { data: alumnoCreado, error: alumnoError } = await sbAuth
-        .from('alumnos')
-        .insert({ perfil_id: userId, grupo_id: grupoData.id, estado: 'activo' })
-        .select('id')
-        .single();
-
-      if(alumnoError){
-        console.error(alumnoError);
-        statusBox('Cuenta creada, pero falta completar el registro de alumno.', 'error');
-        return;
-      }
-
-      const { data: modulosGrupo, error: modulosError } = await sbAuth
-        .from('asignaciones')
-        .select('materias(clave)')
-        .eq('grupo_id', grupoData.id)
-        .eq('activa', true);
-
-      if(modulosError){
-        console.error(modulosError);
-      }
-
-      const accesosIniciales = (modulosGrupo || [])
-        .map(item => item.materias?.clave)
-        .filter(Boolean)
-        .map(modulo => ({ alumno_id: alumnoCreado.id, modulo, habilitado: true }));
-
-      if(accesosIniciales.length){
-        const { error: accesosError } = await sbAuth
-          .from('alumno_accesos')
-          .upsert(accesosIniciales, { onConflict: 'alumno_id,modulo' });
-        if(accesosError) console.error(accesosError);
-      }
-
       statusBox('Cuenta de alumno creada correctamente. Redirigiendo');
       setTimeout(() => { location.href = 'alumno/dashboard.html'; }, 900);
-      return;
-    }
-
-    if(rol === 'admin'){
-      statusBox('Cuenta administradora creada correctamente. Redirigiendo');
-      setTimeout(() => { location.href = 'admin/dashboard.html'; }, 900);
       return;
     }
 
@@ -207,7 +135,7 @@ if(registroForm){
 
 async function cerrarSesion(){
   await sbAuth.auth.signOut();
-  location.href = rutaLogin();
+  location.href = '../login.html';
 }
 
 async function protegerPagina(rolEsperado){

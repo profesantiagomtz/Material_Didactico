@@ -17,7 +17,7 @@ function obtenerMapaModulos(){
 async function iniciarAlumnoDashboard(){
   ocultarModulos();
 
-  if(typeof perfilActual !== 'function' || typeof sbAuth === 'undefined'){
+  if(typeof perfilActual !== 'function'){
     mostrarAviso('No se pudo validar la sesión.');
     return;
   }
@@ -87,20 +87,18 @@ async function cargarModulosAsignados(alumno){
     .select('modulo, habilitado')
     .eq('alumno_id', alumno.id);
 
-  if(accesosError){
-    console.error(accesosError);
-  }
+  if(accesosError) console.error(accesosError);
 
   const accesoPorModulo = new Map((accesos || []).map(a => [a.modulo, a.habilitado]));
   const grupoNombre = alumno.grupos?.nombre || '';
   let visibles = 0;
 
   modulosAsignados.forEach(modulo => {
-    const habilitado = accesoPorModulo.has(modulo) ? accesoPorModulo.get(modulo) === true : true;
-    if(!habilitado) return;
-
     const card = mapaModulos[modulo];
     if(!card) return;
+
+    const habilitado = accesoPorModulo.has(modulo) ? accesoPorModulo.get(modulo) === true : true;
+    if(!habilitado) return;
 
     visibles++;
     card.classList.remove('hidden');
@@ -108,14 +106,10 @@ async function cargarModulosAsignados(alumno){
     card.setAttribute('href', infoModulos[modulo]?.href || '#');
 
     const meta = card.querySelector('.meta');
-    if(meta){
-      meta.innerHTML = `<span class="chip">${esc(grupoNombre)}</span>`;
-    }
+    if(meta) meta.innerHTML = `<span class="chip">${esc(grupoNombre)}</span>`;
   });
 
-  if(!visibles){
-    mostrarAviso('No tienes módulos activos por el momento.');
-  }
+  if(!visibles) mostrarAviso('No tienes módulos activos por el momento.');
 }
 
 function mostrarAviso(texto){
