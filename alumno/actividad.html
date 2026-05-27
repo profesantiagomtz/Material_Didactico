@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Actividad | Material Didáctico 2.0</title>
+  <title>Cuaderno de actividad | Material Didáctico 2.0</title>
   <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
+  <div class="app activity-workspace">
+    <header class="topbar activity-topbar">
       <a class="brand" href="dashboard.html">
         <div class="brand-mark">📒</div>
         <div>
-          <h1>Actividad</h1>
+          <h1>Cuaderno digital</h1>
           <p data-user-name>Alumno</p>
         </div>
       </a>
@@ -23,44 +23,80 @@
       </nav>
     </header>
 
-    <section class="notebook activity-hero" id="actividadEncabezado">
+    <section class="notebook activity-hero-pro" id="actividadEncabezado">
       <div class="breadcrumb">Alumno · Actividad</div>
       <h2>Cargando actividad</h2>
-      <p>Espera un momento.</p>
+      <p>Preparando tu cuaderno de trabajo.</p>
     </section>
 
-    <section class="activity-tabs-wrap hidden" id="actividadTabsWrap">
-      <button class="tab active" data-section-target="apuntes">Información</button>
-      <button class="tab" data-section-target="diagramas">Diagramas</button>
-      <button class="tab" data-section-target="ejemplo">Ejemplo</button>
-      <button class="tab" data-section-target="ejercicios">Ejercicios</button>
-      <button class="tab" data-section-target="practica">Práctica guiada</button>
-      <button class="tab" data-section-target="evidencia">Evidencia</button>
-    </section>
+    <div class="learning-shell hidden" id="learningShell">
+      <aside class="lesson-sidebar" aria-label="Navegación del cuaderno">
+        <div class="sidebar-card">
+          <span class="label-pill">Ruta</span>
+          <h3>Avance del cuaderno</h3>
+          <div class="progress-track"><span id="progressBar" style="width:0%"></span></div>
+          <p id="progressText">0% completado</p>
+        </div>
+        <nav class="lesson-nav" id="lessonNav">
+          <button class="lesson-nav-item active" data-section-target="apuntes"><span>01</span> Información</button>
+          <button class="lesson-nav-item" data-section-target="diagramas"><span>02</span> Diagramas</button>
+          <button class="lesson-nav-item" data-section-target="ejemplo"><span>03</span> Ejemplo</button>
+          <button class="lesson-nav-item" data-section-target="ejercicios"><span>04</span> Ejercicios</button>
+          <button class="lesson-nav-item" data-section-target="practica"><span>05</span> Práctica</button>
+          <button class="lesson-nav-item" data-section-target="entrega"><span>06</span> Entrega</button>
+        </nav>
+      </aside>
 
-    <main id="actividadContenido" class="activity-notebook"></main>
+      <main class="lesson-pages">
+        <section class="activity-section paper-card lesson-page" data-section="apuntes"></section>
+        <section class="activity-section paper-card lesson-page hidden" data-section="diagramas"></section>
+        <section class="activity-section paper-card lesson-page hidden" data-section="ejemplo"></section>
+        <section class="activity-section paper-card lesson-page hidden" data-section="ejercicios"></section>
+        <section class="activity-section paper-card lesson-page hidden" data-section="practica"></section>
+        <section class="activity-section paper-card lesson-page hidden" data-section="entrega">
+          <div class="section-heading">
+            <span class="label-pill">Entrega</span>
+            <h3>Centro de entrega</h3>
+            <p>Aquí envías tu trabajo completo: respuestas del cuaderno, bitácora de práctica y archivo de Packet Tracer. La revisión preliminar no te da respuestas; solo te orienta para mejorar antes de entregar.</p>
+          </div>
 
-    <section class="panel evidence-panel" id="evidencia">
-      <div class="section-heading">
-        <span class="label-pill">Entrega</span>
-        <h3>Evidencia y reflexión del alumno</h3>
-        <p>Responde con tus propias palabras. El sistema analizará tu razonamiento, tu procedimiento y la coherencia con la evidencia que entregues.</p>
-      </div>
-      <form id="formEntrega" class="form">
-        <label class="field"><span>Análisis del problema</span><textarea class="textarea" id="analisisTexto" required placeholder="Explica qué situación resolviste, qué observaste y qué revisaste primero."></textarea></label>
-        <label class="field"><span>Procedimiento realizado</span><textarea class="textarea" id="procedimientoTexto" required placeholder="Describe los pasos que seguiste. Incluye comandos, verificaciones y decisiones."></textarea></label>
-        <label class="field"><span>Reflexión final</span><textarea class="textarea" id="reflexionTexto" required placeholder="Explica qué aprendiste y qué harías si el resultado no funcionara."></textarea></label>
-        <label class="field"><span>Archivo de evidencia</span><input class="input" type="file" id="entregaArchivo" accept=".pkt,.pdf,.png,.jpg,.jpeg,.zip,.doc,.docx"></label>
-        <div id="revisionPrevia" class="feedback-box hidden"></div>
-        <div class="actions"><button class="btn primary" type="submit">Enviar evidencia</button></div>
-      </form>
-      <div id="entregaStatus" class="status hidden"></div>
-    </section>
+          <div class="submission-grid">
+            <div class="submission-summary">
+              <h4>Antes de enviar revisa:</h4>
+              <ul class="check-list">
+                <li>Contestaste los ejercicios con tus propias palabras.</li>
+                <li>Seguiste la práctica en Packet Tracer.</li>
+                <li>Tu explicación menciona comandos y verificaciones.</li>
+                <li>Subiste el archivo <strong>.pkt</strong> o evidencia solicitada.</li>
+              </ul>
+              <div id="revisionPrevia" class="feedback-box hidden"></div>
+            </div>
+
+            <form id="formEntrega" class="form submission-form">
+              <label class="field">
+                <span>Bitácora breve de práctica</span>
+                <textarea class="textarea" id="bitacoraTexto" required placeholder="Escribe qué configuraste, qué comandos usaste, qué comprobaste y qué resultado obtuviste."></textarea>
+              </label>
+              <label class="field">
+                <span>Archivo Packet Tracer o evidencia</span>
+                <input class="input" type="file" id="entregaArchivo" accept=".pkt,.pka,.pdf,.png,.jpg,.jpeg,.zip,.doc,.docx">
+              </label>
+              <div class="actions">
+                <button class="btn" type="button" id="btnRevision">Revisar antes de enviar</button>
+                <button class="btn primary" type="submit">Enviar trabajo</button>
+              </div>
+              <div id="entregaStatus" class="status hidden"></div>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
   </div>
-  <script src="../assets/js/config.js?v=20260527-2"></script>
+
+  <script src="../assets/js/config.js?v=20260527-3"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../assets/js/auth.js?v=20260527-2"></script>
+  <script src="../assets/js/auth.js?v=20260527-3"></script>
   <script>protegerPagina('alumno')</script>
-  <script src="../assets/js/actividad.js?v=20260527-2"></script>
+  <script src="../assets/js/actividad.js?v=20260527-3"></script>
 </body>
 </html>
