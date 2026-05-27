@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Actividad | Material Didáctico 2.0</title>
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="dashboard.html">
+        <div class="brand-mark">📒</div>
+        <div>
+          <h1>Actividad</h1>
+          <p data-user-name>Alumno</p>
+        </div>
+      </a>
+      <nav class="nav">
+        <a href="mrde.html">MRDE</a>
+        <a href="dashboard.html">Módulos</a>
+        <button class="btn" onclick="cerrarSesion()">Salir</button>
+      </nav>
+    </header>
+
+    <section class="notebook" id="actividadDetalle">
+      <div class="breadcrumb">Alumno · Actividad</div>
+      <h2>Cargando actividad</h2>
+      <p>Espera un momento.</p>
+    </section>
+
+    <section class="panel">
+      <h3>Entrega de evidencia</h3>
+      <form id="formEntrega" class="form">
+        <label class="field"><span>Explicación de tu procedimiento</span><textarea class="textarea" id="entregaTexto" required placeholder="Explica con tus palabras qué hiciste, qué comandos utilizaste y cómo verificaste el resultado."></textarea></label>
+        <label class="field"><span>Archivo de evidencia</span><input class="input" type="file" id="entregaArchivo" accept=".pkt,.pdf,.png,.jpg,.jpeg,.zip,.doc,.docx"></label>
+        <div class="actions"><button class="btn primary" type="submit">Enviar evidencia</button></div>
+      </form>
+      <div id="entregaStatus" class="status hidden"></div>
+    </section>
+  </div>
+  <script src="../assets/js/config.js?v=20260527-1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/auth.js?v=20260527-1"></script>
+  <script>protegerPagina('alumno')</script>
+  <script src="../assets/js/actividad.js?v=20260527-1"></script>
+</body>
+</html>
